@@ -1061,6 +1061,20 @@
       </div>
     </section>
 
+    <!-- ── Lead Capture ── -->
+    <section>
+      <div class="section-label">Free Resource</div>
+      <h2 class="section-title">Get the <span class="highlight">Strategy Blueprint</span></h2>
+      <p class="section-desc">Not ready to build? Get a free PDF: how to structure your entry/exit rules, set risk parameters, and prepare your strategy for automation.</p>
+      <div class="card" style="max-width:500px; margin:0 auto; padding:2rem; text-align:center;">
+        <p style="color:var(--text-dim); font-size:0.85rem; margin-bottom:1.5rem; line-height:1.6;">
+          Drop your email via Telegram and I'll send it over — no strings attached.
+        </p>
+        <a href="https://t.me/MsRinaC?text=Hi%20Hafizzat%2C%20please%20send%20me%20the%20Strategy%20Blueprint" class="btn-primary" style="padding:0.9rem 2rem; font-size:0.8rem;">📥 Get the Blueprint</a>
+        <p style="font-size:0.65rem; color:var(--text-dim); margin-top:1rem;">No spam. Just one useful PDF.</p>
+      </div>
+    </section>
+
     <!-- ── FAQ ── -->
     <section>
       <div class="section-label">Knowledge Base</div>
@@ -1126,8 +1140,8 @@
       <div>
         <h4>Legal</h4>
         <ul>
-          <li><a href="https://t.me/MsRinaC">Terms of Service</a></li>
-          <li><a href="https://t.me/MsRinaC">Privacy Policy</a></li>
+          <li><a href="terms.html">Terms of Service</a></li>
+          <li><a href="privacy.html">Privacy Policy</a></li>
         </ul>
       </div>
     </footer>
@@ -1136,7 +1150,8 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script>
-    // ── Three.js Particle System ──
+    // ── Three.js Particle System (Desktop Only) ──
+    if (window.innerWidth > 768) {
     const canvas = document.getElementById('particle-canvas');
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -1267,6 +1282,7 @@
       camera.updateProjectionMatrix();
       renderer.setSize(window.innerWidth, window.innerHeight);
     });
+    } /* end desktop-only */
   </script>
 </body>
 </html>
