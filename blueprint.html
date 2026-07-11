@@ -46,11 +46,11 @@ th { color:var(--cyan); font-weight:600; font-size:0.7rem; text-transform:upperc
 <div class="section">
 <h2>1. Asset & Timeframe</h2>
 <label>Primary pair / asset</label>
-<input type="text" placeholder="e.g. EURJPY, GOLD, GBPJPY">
+<input id="asset" type="text" placeholder="e.g. EURJPY, GOLD, GBPJPY">
 <label>Timeframe(s) for entry</label>
-<input type="text" placeholder="e.g. M15 entry, H4 bias">
+<input id="timeframe" type="text" placeholder="e.g. M15 entry, H4 bias">
 <label>Session preference</label>
-<select><option>London</option><option>New York</option><option>Asian</option><option>Any / All</option></select>
+<select id="session"><option>London</option><option>New York</option><option>Asian</option><option>Any / All</option></select>
 </div>
 
 <div class="section">
@@ -88,11 +88,11 @@ th { color:var(--cyan); font-weight:600; font-size:0.7rem; text-transform:upperc
 <div class="section">
 <h2>5. Risk Parameters</h2>
 <label>Risk per trade (% of account)</label>
-<input type="text" placeholder="e.g. 1%">
+<input id="risk" type="text" placeholder="e.g. 1%">
 <label>Max daily drawdown before stopping</label>
-<input type="text" placeholder="e.g. 3%">
+<input id="maxdd" type="text" placeholder="e.g. 3%">
 <label>Max concurrent positions</label>
-<input type="text" placeholder="e.g. 2">
+<input id="maxpos" type="text" placeholder="e.g. 2">
 </div>
 
 <div class="section">
@@ -127,9 +127,47 @@ function calcScore() {
 }
 </script>
 
+<script>
+function submitToWhatsApp() {
+  // Grab values
+  const asset = document.getElementById('asset')?.value || 'Not specified';
+  const tf = document.getElementById('timeframe')?.value || 'Not specified';
+  const session = document.getElementById('session')?.value || 'Not specified';
+  const risk = document.getElementById('risk')?.value || 'Not specified';
+  const maxdd = document.getElementById('maxdd')?.value || 'Not specified';
+  const maxpos = document.getElementById('maxpos')?.value || 'Not specified';
+  
+  // Calculate score
+  const selects = document.querySelectorAll('.q');
+  let score = 0;
+  selects.forEach(s => score += parseInt(s.value) || 0);
+  const status = score >= 6 ? 'Ready' : 'Needs structuring';
+  
+  // Check which SL method is checked
+  const slChecks = document.querySelectorAll('input[type="checkbox"]');
+  let slMethod = '';
+  slChecks.forEach(c => { if(c.checked) slMethod += c.parentElement.textContent.trim() + ' | '; });
+  slMethod = slMethod || 'Not specified';
+  
+  // Build message
+  const text = `Hi Hafizzat, I've completed my Strategy Blueprint.\n\n` +
+    `*My System Stats:*\n` +
+    `\u2022 *Readiness Score:* ${score}/9 (${status})\n` +
+    `\u2022 *Primary Asset:* ${asset}\n` +
+    `\u2022 *Timeframe:* ${tf}\n` +
+    `\u2022 *Session:* ${session}\n` +
+    `\u2022 *Risk per Trade:* ${risk}\n` +
+    `\u2022 *Max Daily Drawdown:* ${maxdd}\n` +
+    `\u2022 *SL Method:* ${slMethod.trim()}\n\n` +
+    `Can you review my entry rules to see if they fit your deployment queue?`;
+  
+  window.location.href = `https://wa.me/60133355669?text=${encodeURIComponent(text)}`;
+}
+</script>
+
 <div style="text-align:center; margin:2rem 0;">
-<a href="https://wa.me/60133355669?text=Hi%20Hafizzat%2C%20I've%20completed%20my%20Strategy%20Blueprint.%20My%20score%20is%20[XX]%20-%20can%20you%20review%20it%3F" class="btn btn-primary">📤 Submit for Review</a>
-<p style="margin-top:0.8rem; font-size:0.75rem; color:var(--text-dim);">Hafizzat reviews every submission personally. Limited to 3 builds per month.</p>
+<button onclick="submitToWhatsApp()" class="btn btn-primary">📤 Submit for Review</button>
+<p style="margin-top:0.8rem; font-size:0.75rem; color:var(--text-dim);">Your filled data will be sent to Hafizzat automatically. Limited to 3 builds per month.</p>
 </div>
 </body>
 </html>
