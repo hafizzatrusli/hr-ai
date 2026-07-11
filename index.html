@@ -1474,21 +1474,24 @@
     } /* end desktop-only */
   </script>
   <script>
-    (function(){
-      var N=["Ahmad","Sarah","Michael","Jessica","Daniel","Emily","David","Sofia","Alex","Nina","Ryan","Amanda","Kevin","Rachel","Brian","Vanessa","Jason","Hannah","Chris","Michelle","Patrick","Angela","Thomas","Natasha","Jonathan","Diana","Mark","Sandra","Steven","Lisa","Andrew","Karen","Adam","Tina","Edward","Pamela","Raymond","Vivian","Simon","Grace","Derek","Wendy","Vincent","Joyce","Norman","Elaine","Albert","Shirley","Henry","Catherine"];
-      var L=["Tan","Wong","Lim","Lee","Ng","Koh","Ong","Teo","Chan","Goh","Chua","Loh","Yap","Yeo","Liew","Chen","Wang","Li","Zhang","Liu","Yang","Huang","Zhou","Wu","Xu","Zhu","Lin","Hew","Chin","Low","Singh","Ho","Tai","Kwan","Phua","Saw","Pang","Foong","Ling","Kok"];
-      var F=["🇲🇾","🇸🇬","🇮🇩","🇭🇰","🇰🇷","🇹🇭","🇻🇳","🇵🇭","🇨🇳","🇯🇵","🇦🇺","🇬🇧"];
-      var A=["just enrolled in Turn Charts Into Cashflow","just deployed a custom AI trading system","started the automation program","just got their system deployed live","downloaded the Strategy Blueprint","just purchased Framework Access","upgraded to Turnkey deployment","signed up for the Ultimate Class","completed the automation workshop"];
-      var P=["Ultimate Class","Turnkey","Framework Access","Self-Serve","Free Resource"];
-      var c=document.getElementById("social-proof");if(!c)return;
-      function r(a){return a[Math.floor(Math.random()*a.length)];}
-      function s(){
-        c.innerHTML='<div class="sp-card"><div class="sp-avatar">'+r(F)+'</div><div class="sp-content"><div class="sp-name">'+r(F)+' '+r(N)+' '+r(L)+'</div><div class="sp-action">'+r(A)+' <strong>'+r(P)+'</strong></div><div class="sp-time">'+["just now","2 min ago","5 min ago","12 min ago","18 min ago","27 min ago","1 hour ago","3 hours ago"][Math.floor(Math.random()*8)]+'</div></div></div>';
-        c.classList.add("visible");
-      }
-      setTimeout(function(){s();setInterval(s,14000);},3000);
-    })();
-  </script>
+(function(){
+  var N=["Ahmad","Sarah","Michael","Jessica","Daniel","Emily","David","Sofia","Alex","Nina","Ryan","Amanda","Kevin","Rachel","Brian","Vanessa","Jason","Hannah","Chris","Michelle","Patrick","Angela","Thomas","Natasha","Jonathan","Diana","Mark","Sandra","Steven","Lisa","Andrew","Karen","Adam","Tina","Edward","Pamela","Raymond","Vivian","Simon","Grace","Derek","Wendy","Vincent","Joyce","Norman","Elaine","Albert","Shirley","Henry","Catherine","Kenneth","Donna","Philip","Rebecca","Francis","Juliana","Dennis","Megan","Terence","Cindy"];
+  var L=["Tan","Wong","Lim","Lee","Ng","Koh","Ong","Teo","Chan","Goh","Chua","Loh","Yap","Yeo","Liew","Chen","Wang","Li","Zhang","Liu","Yang","Huang","Zhou","Wu","Xu","Zhu","Lin","Hew","Chin","Low","Singh","Ho","Tai","Kwan","Phua","Saw","Pang","Foong","Ling","Kok","Chong","Yong","Soon"];
+  var F=["MY","SG","ID","HK","KR","TH","VN","PH","CN","JP","AU","GB","US","DE","FR","CA","NZ","KZ","AE","SA","IN","BN"];
+  var A=["just enrolled in Turn Charts Into Cashflow","deployed their custom AI trading system","started the automation program","joined the Ultimate Class program","downloaded the Strategy Blueprint","purchased Framework Access","upgraded to Turnkey deployment","signed up for the course","completed the automation workshop","requested a system consultation","started building their MT5 EA","began the 30-day optimisation","submitted their strategy for coding","joined from a friend referral","got their demo connected","started the strategy blueprint course","registered for live deployment","booked a strategy review call"];
+  var P=["Ultimate Class","Turnkey System","Framework Access","Strategy Blueprint","Automation Workshop","1-on-1 Consult"];
+  var FL={"MY":"🇲🇾","SG":"🇸🇬","ID":"🇮🇩","HK":"🇭🇰","KR":"🇰🇷","TH":"🇹🇭","VN":"🇻🇳","PH":"🇵🇭","CN":"🇨🇳","JP":"🇯🇵","AU":"🇦🇺","GB":"🇬🇧","US":"🇺🇸","DE":"🇩🇪","FR":"🇫🇷","CA":"🇨🇦","NZ":"🇳🇿","KZ":"🇰🇿","AE":"🇦🇪","SA":"🇸🇦","IN":"🇮🇳","BN":"🇧🇳"};
+  var c=document.getElementById("social-proof");if(!c)return;
+  var TC=["just now","2 min ago","4 min ago","8 min ago","13 min ago","19 min ago","26 min ago","35 min ago","47 min ago","1 hour ago","2 hours ago","3 hours ago","5 hours ago","7 hours ago","9 hours ago","12 hours ago","18 hours ago","1 day ago","2 days ago","3 days ago"];
+  function r(a){return a[Math.floor(Math.random()*a.length)];}
+  function s(){
+    var flg=r(F);
+    c.innerHTML='<div class="sp-card"><div class="sp-avatar">'+FL[flg]+'</div><div class="sp-content"><div class="sp-name">'+FL[flg]+' '+r(N)+' '+r(L)+'</div><div class="sp-action">'+r(A)+' <strong>'+r(P)+'</strong></div><div class="sp-time">'+r(TC)+'</div></div></div>';
+    c.classList.add("visible");
+  }
+  setTimeout(function(){s();setInterval(s,14000);},3000);
+})();
+</script>
 
 </body>
 </html>
