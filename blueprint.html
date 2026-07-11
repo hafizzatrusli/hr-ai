@@ -104,7 +104,7 @@ th { color:var(--cyan); font-weight:600; font-size:0.7rem; text-transform:upperc
 <div class="quiz-item"><span>Do you have a log of the last 50 setups (wins + losses)?</span> <select class="q"><option value="0">No (0)</option><option value="2">Yes (+2)</option></select></div>
 <div class="quiz-item"><span>Can you monitor charts 24/5 without missing a signal?</span> <select class="q"><option value="3">No (+3 — need automation)</option><option value="0">Yes (0)</option></select></div>
 </div>
-<button class="calc-btn" onclick="calcScore()">Calculate My Score</button>
+<button class="calc-btn" onclick="calcScore()" type="button">Calculate My Score</button>
 <div id="score-result" style="display:none;" class="score-box">
 <div class="num" id="score-num">0</div>
 <p id="score-msg" style="color:var(--text-dim); margin-top:0.5rem;"></p>
@@ -115,7 +115,7 @@ th { color:var(--cyan); font-weight:600; font-size:0.7rem; text-transform:upperc
 function calcScore() {
   const selects = document.querySelectorAll('.q');
   let total = 0;
-  selects.forEach(s => total += parseInt(s.value));
+  selects.forEach(s => total += parseInt(s.value) || 0);
   document.getElementById('score-num').textContent = total + ' / 9';
   document.getElementById('score-result').style.display = 'block';
   const msg = document.getElementById('score-msg');
@@ -125,6 +125,11 @@ function calcScore() {
     msg.innerHTML = "📝 Your strategy has discretionary noise. Let's clean it up.<br>Send your current rules to Hafizzat — he'll help structure them into a codeable framework.";
   }
 }
+// Attach event listener after DOM loads
+document.addEventListener('DOMContentLoaded', function() {
+  var btn = document.querySelector('.calc-btn');
+  if (btn) btn.addEventListener('click', calcScore);
+});
 </script>
 
 <script>
