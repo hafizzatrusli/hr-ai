@@ -1,0 +1,1159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HR AI — Build Your AI Trader</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --cyan: #0d9488;
+      --cyan-bright: #14d8c4;
+      --cyan-glow: rgba(13, 148, 136, 0.4);
+      --cyan-dim: rgba(13, 148, 136, 0.15);
+      --bg: #05080a;
+      --bg-card: rgba(13, 20, 25, 0.7);
+      --text: #e8f0f0;
+      --text-dim: #7a9296;
+      --border: rgba(13, 148, 136, 0.2);
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    /* ── Three.js canvas ── */
+    #particle-canvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* ── Scan-line overlay ── */
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(13, 148, 136, 0.015) 2px,
+        rgba(13, 148, 136, 0.015) 4px
+      );
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* ── Corner vignette ── */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: radial-gradient(ellipse at center, transparent 50%, rgba(5,8,10,0.8) 100%);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--cyan); border-radius: 10px; }
+
+    /* ── Content wrapper ── */
+    .content {
+      position: relative;
+      z-index: 2;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+
+    /* ── Nav ── */
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.5rem 0;
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(10px);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: rgba(5,8,10,0.6);
+    }
+    .nav-logo {
+      font-weight: 800;
+      font-size: 1.2rem;
+      color: var(--text);
+      text-decoration: none;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+    .nav-logo span {
+      color: var(--cyan-bright);
+      text-shadow: 0 0 20px var(--cyan-glow);
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      list-style: none;
+    }
+    .nav-links a {
+      text-decoration: none;
+      color: var(--text-dim);
+      font-size: 0.78rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      transition: color 0.3s, text-shadow 0.3s;
+      position: relative;
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -4px; left: 0;
+      width: 0; height: 1px;
+      background: var(--cyan);
+      transition: width 0.3s;
+    }
+    .nav-links a:hover {
+      color: var(--cyan-bright);
+      text-shadow: 0 0 10px var(--cyan-glow);
+    }
+    .nav-links a:hover::after { width: 100%; }
+
+    /* ── Hero ── */
+    .hero {
+      padding: 8rem 0 4rem;
+      text-align: center;
+      position: relative;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--cyan-dim);
+      border: 1px solid var(--border);
+      padding: 0.4rem 1.2rem;
+      border-radius: 100px;
+      font-size: 0.65rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 2.5px;
+      color: var(--cyan-bright);
+      margin-bottom: 2rem;
+      animation: pulse-badge 3s ease-in-out infinite;
+    }
+    .hero-badge .dot {
+      width: 5px; height: 5px;
+      background: var(--cyan-bright);
+      border-radius: 50%;
+      animation: blink 1.5s infinite;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.2; }
+    }
+    @keyframes pulse-badge {
+      0%, 100% { box-shadow: 0 0 5px var(--cyan-glow); }
+      50% { box-shadow: 0 0 20px var(--cyan-glow); }
+    }
+
+    .hero h1 {
+      font-size: 4rem;
+      font-weight: 900;
+      line-height: 1.05;
+      letter-spacing: -2px;
+      margin-bottom: 1.2rem;
+    }
+    .hero h1 .gradient {
+      background: linear-gradient(135deg, var(--cyan-bright), #5eead4, var(--cyan-bright));
+      background-size: 200% 200%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: shimmer 4s ease-in-out infinite;
+    }
+    @keyframes shimmer {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+    .hero .sub {
+      font-size: 1.05rem;
+      color: var(--text-dim);
+      max-width: 600px;
+      margin: 0 auto 2.5rem;
+      line-height: 1.7;
+      font-weight: 300;
+    }
+
+    .hero-stats {
+      display: flex;
+      justify-content: center;
+      gap: 4rem;
+      margin-bottom: 3rem;
+      flex-wrap: wrap;
+    }
+    .hero-stats div { text-align: center; }
+    .hero-stats .num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: var(--cyan-bright);
+      text-shadow: 0 0 30px var(--cyan-glow);
+      line-height: 1;
+    }
+    .hero-stats .label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--text-dim);
+      margin-top: 0.4rem;
+    }
+
+    .btn-primary {
+      display: inline-block;
+      padding: 1.1rem 3rem;
+      background: linear-gradient(135deg, var(--cyan), #0f766e);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      transition: transform 0.3s, box-shadow 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+    .btn-primary::before {
+      content: '';
+      position: absolute;
+      top: -2px; left: -2px;
+      right: -2px; bottom: -2px;
+      background: linear-gradient(135deg, var(--cyan-bright), transparent, var(--cyan-bright));
+      border-radius: 8px;
+      z-index: -1;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 40px var(--cyan-glow);
+    }
+    .btn-primary:hover::before { opacity: 1; }
+
+    .btn-outline {
+      display: inline-block;
+      padding: 1.1rem 3rem;
+      background: transparent;
+      color: var(--cyan-bright);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      transition: border-color 0.3s, box-shadow 0.3s, background 0.3s;
+    }
+    .btn-outline:hover {
+      border-color: var(--cyan);
+      box-shadow: 0 0 30px var(--cyan-glow);
+      background: var(--cyan-dim);
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    /* ── Section titles ── */
+    section { padding: 5rem 0; }
+    .section-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      color: var(--cyan);
+      margin-bottom: 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .section-label::before {
+      content: '//';
+      color: var(--cyan-dim);
+    }
+    .section-title {
+      font-size: 2.5rem;
+      font-weight: 800;
+      letter-spacing: -1px;
+      margin-bottom: 0.8rem;
+    }
+    .section-title .highlight {
+      color: var(--cyan-bright);
+      text-shadow: 0 0 20px var(--cyan-glow);
+    }
+    .section-desc {
+      color: var(--text-dim);
+      font-size: 0.95rem;
+      max-width: 600px;
+      line-height: 1.7;
+      font-weight: 300;
+      margin-bottom: 3rem;
+    }
+
+    /* ── Risk architecture ── */
+    .risk-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.2rem;
+    }
+    @media (max-width: 768px) {
+      .risk-grid { grid-template-columns: 1fr; }
+    }
+    .risk-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.6rem;
+      transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+    .risk-card:hover {
+      border-color: var(--cyan);
+      transform: translateY(-3px);
+      box-shadow: 0 10px 40px rgba(13,148,136,0.1);
+    }
+    .risk-card .risk-icon {
+      font-size: 1.5rem;
+      margin-bottom: 0.6rem;
+    }
+    .risk-card h3 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 0.3rem;
+    }
+    .risk-card .risk-tag {
+      display: inline-block;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.55rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--cyan-bright);
+      border: 1px solid var(--border);
+      background: var(--cyan-dim);
+      padding: 0.15rem 0.7rem;
+      border-radius: 100px;
+      margin-bottom: 0.6rem;
+    }
+    .risk-card p {
+      color: var(--text-dim);
+      font-size: 0.8rem;
+      line-height: 1.6;
+      font-weight: 300;
+    }
+    .risk-card .risk-stat {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--cyan-bright);
+      text-shadow: 0 0 15px var(--cyan-glow);
+      margin-top: 0.8rem;
+    }
+    .risk-card .risk-stat small {
+      font-size: 0.65rem;
+      color: var(--text-dim);
+      font-family: 'Inter', sans-serif;
+      font-weight: 400;
+    }
+
+    /* ── Holographic cards ── */
+    .card {
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2rem;
+      transition: transform 0.4s, box-shadow 0.4s, border-color 0.4s;
+      position: relative;
+      overflow: hidden;
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      top: -50%; left: -50%;
+      width: 200%; height: 200%;
+      background: conic-gradient(from 0deg at 50% 50%, transparent, var(--cyan-dim), transparent 30%, transparent 60%, var(--cyan-dim) 80%, transparent);
+      animation: spin-slow 8s linear infinite;
+      opacity: 0;
+      transition: opacity 0.5s;
+      z-index: 0;
+    }
+    .card:hover::before { opacity: 1; }
+    .card:hover {
+      transform: translateY(-4px) scale(1.01);
+      box-shadow: 0 20px 60px rgba(13,148,136,0.15);
+      border-color: rgba(13,148,136,0.4);
+    }
+    .card > * { position: relative; z-index: 1; }
+
+    @keyframes spin-slow {
+      to { transform: rotate(360deg); }
+    }
+
+    /* ── Pricing grid ── */
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+    @media (max-width: 768px) {
+      .pricing-grid { grid-template-columns: 1fr; }
+    }
+    .card.featured {
+      border-color: var(--cyan);
+      box-shadow: 0 0 40px rgba(13,148,136,0.1);
+    }
+    .card-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--cyan);
+      font-weight: 600;
+    }
+    .card h3 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin: 0.5rem 0;
+    }
+    .price {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 3rem;
+      font-weight: 700;
+      color: var(--cyan-bright);
+      text-shadow: 0 0 20px var(--cyan-glow);
+      margin: 1rem 0 0.3rem;
+    }
+    .price small {
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      font-family: 'Inter', sans-serif;
+    }
+    .card-desc {
+      color: var(--text-dim);
+      font-size: 0.85rem;
+      margin-bottom: 1.5rem;
+    }
+    .card ul {
+      list-style: none;
+      margin-bottom: 2rem;
+    }
+    .card ul li {
+      font-size: 0.85rem;
+      color: var(--text);
+      padding: 0.5rem 0;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.7rem;
+      font-weight: 300;
+    }
+    .card ul li::before {
+      content: '◆';
+      color: var(--cyan);
+      font-size: 0.5rem;
+      margin-top: 0.3rem;
+      flex-shrink: 0;
+    }
+    .card-badge {
+      display: inline-block;
+      background: var(--cyan-dim);
+      border: 1px solid var(--border);
+      font-size: 0.6rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      padding: 0.3rem 1rem;
+      border-radius: 100px;
+      color: var(--cyan-bright);
+      margin-bottom: 1rem;
+    }
+
+    /* ── Module grid ── */
+    .module-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.2rem;
+    }
+    @media (max-width: 768px) {
+      .module-grid { grid-template-columns: 1fr; }
+    }
+    .module {
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      text-align: center;
+      transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+      cursor: default;
+    }
+    .module:hover {
+      border-color: var(--cyan);
+      transform: translateY(-3px);
+      box-shadow: 0 10px 40px rgba(13,148,136,0.1);
+    }
+    .module-icon {
+      font-size: 2rem;
+      margin-bottom: 0.8rem;
+      filter: drop-shadow(0 0 10px var(--cyan-glow));
+    }
+    .module h3 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+    }
+    .module p {
+      color: var(--text-dim);
+      font-size: 0.8rem;
+      line-height: 1.5;
+      font-weight: 300;
+    }
+
+    /* ── How it works steps ── */
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+    }
+    @media (max-width: 768px) {
+      .steps { grid-template-columns: 1fr; }
+    }
+    .step {
+      text-align: center;
+      padding: 2rem;
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      transition: transform 0.3s;
+    }
+    .step:hover { transform: translateY(-4px); }
+    .step-num {
+      width: 56px; height: 56px;
+      margin: 0 auto 1rem;
+      border: 1px solid var(--cyan);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--cyan-bright);
+      text-shadow: 0 0 15px var(--cyan-glow);
+      box-shadow: 0 0 20px rgba(13,148,136,0.1);
+    }
+    .step h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .step p {
+      color: var(--text-dim);
+      font-size: 0.85rem;
+      line-height: 1.6;
+      font-weight: 300;
+    }
+
+    /* ── Testimonials ── */
+    .testimonial-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+    @media (max-width: 768px) {
+      .testimonial-grid { grid-template-columns: 1fr; }
+    }
+    .testimonial .stars { color: var(--cyan-bright); font-size: 0.9rem; margin-bottom: 0.8rem; }
+    .testimonial blockquote {
+      color: #ccc;
+      font-size: 0.85rem;
+      line-height: 1.6;
+      font-style: italic;
+      margin-bottom: 1rem;
+      font-weight: 300;
+    }
+    .testimonial .author {
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+    .testimonial .author span { color: var(--text-dim); font-weight: 400; }
+
+    /* ── CTA Strip ── */
+    .cta-section {
+      text-align: center;
+      padding: 6rem 0;
+      position: relative;
+    }
+    .cta-section::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+    }
+    .cta-section h2 {
+      font-size: 3rem;
+      font-weight: 900;
+      letter-spacing: -1.5px;
+      margin-bottom: 1rem;
+    }
+    .cta-section h2 span {
+      color: var(--cyan-bright);
+      text-shadow: 0 0 30px var(--cyan-glow);
+    }
+    .cta-section p {
+      color: var(--text-dim);
+      margin-bottom: 2rem;
+      font-size: 1rem;
+    }
+
+    /* ── FAQ ── */
+    .faq-list { max-width: 700px; margin: 0 auto; }
+    details {
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.2rem 1.5rem;
+      margin-bottom: 0.8rem;
+      cursor: pointer;
+      transition: border-color 0.3s;
+    }
+    details:hover { border-color: var(--cyan); }
+    details summary {
+      font-weight: 600;
+      font-size: 0.9rem;
+      list-style: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    details summary::after {
+      content: '+';
+      color: var(--cyan);
+      font-size: 1.2rem;
+      font-weight: 400;
+      transition: transform 0.3s;
+    }
+    details[open] summary::after { content: '−'; }
+    details p {
+      color: var(--text-dim);
+      font-size: 0.85rem;
+      margin-top: 1rem;
+      line-height: 1.6;
+      font-weight: 300;
+    }
+
+    /* ── Footer ── */
+    footer {
+      padding: 3rem 0 4rem;
+      border-top: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 2rem;
+    }
+    @media (max-width: 768px) {
+      footer { grid-template-columns: 1fr 1fr; }
+    }
+    footer h4 {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--cyan);
+      margin-bottom: 1rem;
+    }
+    footer ul { list-style: none; }
+    footer ul li { margin-bottom: 0.5rem; }
+    footer ul li a {
+      color: var(--text-dim);
+      text-decoration: none;
+      font-size: 0.82rem;
+      font-weight: 300;
+      transition: color 0.3s;
+    }
+    footer ul li a:hover { color: var(--cyan-bright); }
+    .footer-brand p {
+      color: var(--text-dim);
+      font-size: 0.82rem;
+      font-weight: 300;
+    }
+
+    /* ── Floating orbs (CSS parallax) ── */
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(80px);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .orb-1 {
+      width: 600px; height: 600px;
+      background: rgba(13,148,136,0.06);
+      top: -200px; right: -200px;
+      animation: float-orb 12s ease-in-out infinite;
+    }
+    .orb-2 {
+      width: 400px; height: 400px;
+      background: rgba(20,216,196,0.04);
+      bottom: -100px; left: -100px;
+      animation: float-orb 15s ease-in-out infinite reverse;
+    }
+    @keyframes float-orb {
+      0%, 100% { transform: translate(0, 0); }
+      33% { transform: translate(30px, -30px); }
+      66% { transform: translate(-20px, 20px); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background elements -->
+  <canvas id="particle-canvas"></canvas>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+
+  <!-- ── Nav ── -->
+  <div class="content">
+    <nav>
+      <a href="#" class="nav-logo">HR <span>AI</span></a>
+      <ul class="nav-links">
+        <li><a href="#">Build</a></li>
+        <li><a href="#">Modules</a></li>
+        <li><a href="#">Pricing</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+    </nav>
+
+    <!-- ── Hero ── -->
+    <section class="hero">
+      <div class="hero-badge">
+        <span class="dot"></span>
+        System Online — Accepting Build Requests
+      </div>
+      <h1>Build your<br><span class="gradient">AI Trading System</span></h1>
+      <p class="sub">Configure your autonomous trading engine. Signal detection, risk management, and MT5 execution — deployed to your terminal in days, not weeks.</p>
+      <div class="hero-stats">
+        <div>
+          <div class="num">12,847</div>
+          <div class="label">Trades Analysed</div>
+        </div>
+        <div>
+          <div class="num">47</div>
+          <div class="label">Systems Deployed</div>
+        </div>
+        <div>
+          <div class="num">30+</div>
+          <div class="label">Traders Trained</div>
+        </div>
+      </div>
+      <div class="hero-actions">
+        <a href="#" class="btn-primary">● Configure Your System</a>
+        <a href="#" class="btn-outline">View Case Studies</a>
+      </div>
+    </section>
+
+    <!-- ── How It Works ── -->
+    <section>
+      <div class="section-label">Protocol</div>
+      <h2 class="section-title">Deployment <span class="highlight">Sequence</span></h2>
+      <p class="section-desc">Three-phase process from strategy to live execution. Minimal input required from you.</p>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">01</div>
+          <h3>Submit Strategy</h3>
+          <p>Pairs, timeframes, entry logic, risk parameters. Raw ideas accepted — we refine together.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">02</div>
+          <h3>System Assembly</h3>
+          <p>Signal engine, risk module, Telegram broadcaster, MT5 EA — coded, backtested, and tuned.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">03</div>
+          <h3>Live Deployment</h3>
+          <p>System goes live on your MT5 terminal. Signals flow to Telegram. You oversee execution.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Modules ── -->
+    <section>
+      <div class="section-label">Components</div>
+      <h2 class="section-title">The <span class="highlight">Full Stack</span></h2>
+      <p class="section-desc">Every deployment includes these interconnected modules, configured for your specific strategy.</p>
+      <div class="module-grid">
+        <div class="module">
+          <div class="module-icon">📡</div>
+          <h3>Signal Scanner</h3>
+          <p>Real-time multi-pair scanning across your chosen timeframes. Detects your exact setup criteria.</p>
+        </div>
+        <div class="module">
+          <div class="module-icon">📊</div>
+          <h3>Technical Engine</h3>
+          <p>EMA, MACD, Order Blocks, Fibonacci, Volume — your indicator stack, assembled and tuned.</p>
+        </div>
+        <div class="module">
+          <div class="module-icon">🛡️</div>
+          <h3>Risk Module</h3>
+          <p>Position sizing, max drawdown, 1% rule enforcement. Barrier protocol — no trade passes without clearance.</p>
+        </div>
+        <div class="module">
+          <div class="module-icon">🤖</div>
+          <h3>MT5 EA</h3>
+          <p>Direct terminal connection. Market orders, SL/TP management, trailing — autonomous execution.</p>
+        </div>
+        <div class="module">
+          <div class="module-icon">📱</div>
+          <h3>Signal Relay</h3>
+          <p>Structured signals delivered to Telegram. Entry zone, targets, pivot levels — formatted for action.</p>
+        </div>
+        <div class="module">
+          <div class="module-icon">📝</div>
+          <h3>Analytics Core</h3>
+          <p>Auto-logged trades. Win rate, profit factor, Sharpe — weekly performance telemetry.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Risk Architecture ── -->
+    <section>
+      <div class="section-label">Safety Protocol</div>
+      <h2 class="section-title">Risk <span class="highlight">Architecture</span></h2>
+      <p class="section-desc">Every deployment ships with a multi-layered risk engine. These aren't soft suggestions — they're hard-coded barriers that protect your capital 24/7.</p>
+      <div class="risk-grid">
+        <div class="risk-card">
+          <div class="risk-icon">🛡️</div>
+          <div class="risk-tag">Hard Barrier</div>
+          <h3>1% Risk Enforcement</h3>
+          <p>Every position auto-calculates lot size against current account equity before entry. The barrier is hard-coded — no manual override, no EA misread, no oversized trade passes through.</p>
+          <div class="risk-stat">1% <small>max risk per trade — enforced</small></div>
+        </div>
+        <div class="risk-card">
+          <div class="risk-icon">⛔</div>
+          <div class="risk-tag">Circuit Breaker</div>
+          <h3>Drawdown Halt</h3>
+          <p>Real-time equity monitor. If session drawdown hits your preset threshold, the system halts all entries immediately. No new positions until you manually review and reset.</p>
+          <div class="risk-stat">User-defined <small>threshold — no automatic re-entry</small></div>
+        </div>
+        <div class="risk-card">
+          <div class="risk-icon">⚖️</div>
+          <div class="risk-tag">Adaptive Sizing</div>
+          <h3>Position Sizing Engine</h3>
+          <p>ATR-based, account-scaled position sizing. Your risk-per-trade stays mathematically consistent whether your account grows or draws down — no emotional discretion, no variable lot sizes.</p>
+          <div class="risk-stat">Consistent R <small>per trade — always</small></div>
+        </div>
+        <div class="risk-card">
+          <div class="risk-icon">📋</div>
+          <div class="risk-tag">Audit Trail</div>
+          <h3>Execution Transparency</h3>
+          <p>Every trade logged with full context: entry timestamp, SQ risk score, position rationale, SL/TP placement, and exit reason. Full accountability — you always know <em>why</em> the system acted.</p>
+          <div class="risk-stat">Complete <small>trade journal — auto-generated</small></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Pricing ── -->
+    <section>
+      <div class="section-label">Investment</div>
+      <h2 class="section-title">One <span class="highlight">Deployment</span>. One Price.</h2>
+      <p class="section-desc">Full system build. No subscriptions. No recurring fees. You own the entire stack.</p>
+      <div class="pricing-grid">
+        <div class="card">
+          <div class="card-label">Self-Serve</div>
+          <h3>Framework Access</h3>
+          <div class="price">RM28,149 <small>one-time</small></div>
+          <p style="font-size:0.75rem; color:var(--cyan); font-weight:500; margin-bottom:0.3rem; letter-spacing:0.3px;">All core modules, templates &amp; video walkthroughs included</p>
+          <p class="card-desc">For traders with MT5 experience who want to build and tune the system themselves.</p>
+          <ul>
+            <li>Complete system framework &amp; templates</li>
+            <li>Signal detection module base</li>
+            <li>Risk management blueprint</li>
+            <li>MT5 installation guide</li>
+            <li>Video walkthroughs</li>
+          </ul>
+          <button class="btn-outline" style="width:100%;text-align:center;display:block;" disabled>Coming Soon</button>
+        </div>
+        <div class="card featured">
+          <div class="card-badge">★ Recommended</div>
+          <div class="card-label">Full Service</div>
+          <h3>Turnkey Deployment</h3>
+          <div class="price">RM45,873 <small>one-time</small></div>
+          <p style="font-size:0.75rem; color:var(--cyan); font-weight:500; margin-bottom:0.3rem; letter-spacing:0.3px;">Saves 100+ hours dev time &amp; eliminates emotional execution errors</p>
+          <p class="card-desc">We build, backtest, deploy, and optimise. You just trade.</p>
+          <ul>
+            <li>Custom strategy development &amp; coding</li>
+            <li>Full MT5 EA with your entry/exit rules</li>
+            <li>Telegram signal relay configured</li>
+            <li>Risk module with position sizing</li>
+            <li>Backtest report &amp; performance audit</li>
+            <li>30-day optimisation window</li>
+          </ul>
+          <a href="#" class="btn-primary" style="width:100%;text-align:center;display:block;">● Deploy My System</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Testimonials ── -->
+    <section>
+      <div class="section-label">Social Proof</div>
+      <h2 class="section-title">Trusted by <span class="highlight">Real Traders</span></h2>
+      <p class="section-desc">Results from traders who deployed their systems through this program.</p>
+      <div class="testimonial-grid">
+        <div class="card testimonial">
+          <div class="stars">★★★★★</div>
+          <blockquote>"The system catches moves I used to miss while sleeping. Win rate jumped from 45% to 68% in two months."</blockquote>
+          <div class="author">Faza <span>· Ultimate Class</span></div>
+          <div style="font-size:0.6rem; color:var(--cyan); font-weight:600; text-transform:uppercase; letter-spacing:1px; margin-top:0.3rem;">🔹 5 Yr Active Trader · Funded Account Holder</div>
+        </div>
+        <div class="card testimonial">
+          <div class="stars">★★★★★</div>
+          <blockquote>"I was skeptical about automation. But the risk module alone saved my account twice. Worth every cent."</blockquote>
+          <div class="author">Darvin <span>· Ultimate Class</span></div>
+          <div style="font-size:0.6rem; color:var(--cyan); font-weight:600; text-transform:uppercase; letter-spacing:1px; margin-top:0.3rem;">🔹 Portfolio: EURJPY · GBPJPY · 68% WR</div>
+        </div>
+        <div class="card testimonial">
+          <div class="stars">★★★★★</div>
+          <blockquote>"Signals hit my phone formatted and ready. I just verify and let it execute. Absolute game changer."</blockquote>
+          <div class="author">Jackson <span>· #TeamBlue</span></div>
+          <div style="font-size:0.6rem; color:var(--cyan); font-weight:600; text-transform:uppercase; letter-spacing:1px; margin-top:0.3rem;">🔹 System Live 8 Months · 1:2.1 Avg RR</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── FAQ ── -->
+    <section>
+      <div class="section-label">Knowledge Base</div>
+      <h2 class="section-title">Frequently <span class="highlight">Asked</span></h2>
+      <div class="faq-list">
+        <details>
+          <summary>Do I need coding experience?</summary>
+          <p>No. Submit your strategy in plain language — pairs, timeframes, entry rules. We handle all development and configuration.</p>
+        </details>
+        <details>
+          <summary>What if my strategy evolves?</summary>
+          <p>30-day optimisation window included. Parameter tweaks, rule additions — we update the system. After that, the system is yours to modify.</p>
+        </details>
+        <details>
+          <summary>Which brokers are supported?</summary>
+          <p>Any broker with MT5 compatibility. We deploy on FxPro ourselves, but the system connects to any MT5 terminal.</p>
+        </details>
+        <details>
+          <summary>Robot or signal service?</summary>
+          <p>Neither — a custom AI trading system. Real-time market scanning, structured signal generation, optional automated execution via MT5 EA.</p>
+        </details>
+        <details>
+          <summary>Build timeline?</summary>
+          <p>Standard deployment: 5–7 days. Includes coding, backtesting, configuration, and go-live.</p>
+        </details>
+        <details>
+          <summary>Do I own the source code?</summary>
+          <p>Yes — you own the entire stack. Every line of code, every configuration file. The system is deployed to <em>your</em> MT5 terminal. No licensing fees, no recurring charges, no vendor lock-in.</p>
+        </details>
+        <details>
+          <summary>Is my strategy kept confidential?</summary>
+          <p>Absolutely. Your trading logic, entry rules, and risk parameters never leave our development environment after deployment. We sign NDAs on request and maintain zero-access policy to your live terminal.</p>
+        </details>
+        <details>
+          <summary>What if I need changes after 30 days?</summary>
+          <p>The 30-day window covers tuning and optimisation. After that, you own the system and can modify it yourself (documentation included), or request paid updates on an hourly basis. No subscription required.</p>
+        </details>
+      </div>
+    </section>
+
+    <!-- ── Final CTA ── -->
+    <section class="cta-section">
+      <h2>Ready to deploy your <span>AI Trader</span>?</h2>
+      <p>Limited to 3 builds per month to maintain quality.</p>
+      <a href="#" class="btn-primary">● Claim Your Deployment Slot</a>
+    </section>
+
+    <!-- ── Footer ── -->
+    <footer>
+      <div class="footer-brand">
+        <a href="#" class="nav-logo" style="font-size:1rem">HR <span>AI</span></a>
+        <p>Autonomous trading systems for serious retail traders. Built on MT5. Powered by strategy.</p>
+      </div>
+      <div>
+        <h4>Navigation</h4>
+        <ul>
+          <li><a href="#">Build</a></li>
+          <li><a href="#">Modules</a></li>
+          <li><a href="#">Pricing</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Legal</h4>
+        <ul>
+          <li><a href="#">Terms of Service</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+        </ul>
+      </div>
+    </footer>
+
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script>
+    // ── Three.js Particle System ──
+    const canvas = document.getElementById('particle-canvas');
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    // ── Particles ──
+    const particlesGeo = new THREE.BufferGeometry();
+    const count = 1800;
+    const positions = new Float32Array(count * 3);
+    const velocities = [];
+
+    for (let i = 0; i < count; i++) {
+      positions[i*3] = (Math.random() - 0.5) * 60;
+      positions[i*3+1] = (Math.random() - 0.5) * 40;
+      positions[i*3+2] = (Math.random() - 0.5) * 30;
+      velocities.push({
+        x: (Math.random() - 0.5) * 0.005,
+        y: (Math.random() - 0.5) * 0.005,
+        z: (Math.random() - 0.5) * 0.003
+      });
+    }
+
+    particlesGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+    const particlesMat = new THREE.PointsMaterial({
+      size: 0.06,
+      color: 0x0d9488,
+      transparent: true,
+      opacity: 0.6,
+      blending: THREE.AdditiveBlending,
+      sizeAttenuation: true
+    });
+
+    const particles = new THREE.Points(particlesGeo, particlesMat);
+    scene.add(particles);
+
+    // ── Connection lines ──
+    const linesMat = new THREE.LineBasicMaterial({
+      color: 0x0d9488,
+      transparent: true,
+      opacity: 0.08
+    });
+
+    let linePositions = [];
+    function updateConnections() {
+      const pos = particles.geometry.attributes.position.array;
+      const connections = [];
+
+      for (let i = 0; i < count; i += 8) {
+        const i3 = i * 3;
+        for (let j = i + 5; j < count; j += 7) {
+          const j3 = j * 3;
+          const dx = pos[i3] - pos[j3];
+          const dy = pos[i3+1] - pos[j3+1];
+          const dz = pos[i3+2] - pos[j3+2];
+          const dist = Math.sqrt(dx*dx + dy*dy + dz*dz);
+          if (dist < 3.5) {
+            connections.push(pos[i3], pos[i3+1], pos[i3+2], pos[j3], pos[j3+1], pos[j3+2]);
+          }
+        }
+      }
+
+      if (connections.length > 0) {
+        if (linePositions.length !== connections.length) {
+          if (scene.children[1]) scene.remove(scene.children[1]);
+          linePositions = connections;
+          const geo = new THREE.BufferGeometry();
+          geo.setAttribute('position', new THREE.Float32BufferAttribute(connections, 3));
+          const lines = new THREE.LineSegments(geo, linesMat);
+          scene.add(lines);
+        } else {
+          const mesh = scene.children[1];
+          if (mesh) {
+            mesh.geometry.setAttribute('position', new THREE.Float32BufferAttribute(connections, 3));
+            mesh.geometry.attributes.position.needsUpdate = true;
+          }
+        }
+      }
+    }
+
+    // Initial connection build
+    setTimeout(updateConnections, 100);
+
+    camera.position.z = 18;
+
+    let mouseX = 0, mouseY = 0;
+    document.addEventListener('mousemove', (e) => {
+      mouseX = (e.clientX / window.innerWidth - 0.5) * 0.3;
+      mouseY = (e.clientY / window.innerHeight - 0.5) * 0.3;
+    });
+
+    // ── Animation loop ──
+    function animate() {
+      requestAnimationFrame(animate);
+
+      const pos = particles.geometry.attributes.position.array;
+      for (let i = 0; i < count; i++) {
+        pos[i*3] += velocities[i].x;
+        pos[i*3+1] += velocities[i].y;
+        pos[i*3+2] += velocities[i].z;
+
+        if (Math.abs(pos[i*3]) > 30) velocities[i].x *= -1;
+        if (Math.abs(pos[i*3+1]) > 20) velocities[i].y *= -1;
+        if (Math.abs(pos[i*3+2]) > 15) velocities[i].z *= -1;
+      }
+      particles.geometry.attributes.position.needsUpdate = true;
+
+      // Slow rotation
+      particles.rotation.y += 0.0005;
+      particles.rotation.x += 0.0002;
+
+      // Mouse parallax
+      particles.rotation.x += (mouseY * 0.02 - particles.rotation.x) * 0.02;
+      particles.rotation.y += (mouseX * 0.02 - particles.rotation.y) * 0.02;
+
+      // Update connections every 10 frames
+      if (Math.random() < 0.1) updateConnections();
+
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    // ── Resize ──
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  </script>
+</body>
+</html>
