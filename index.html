@@ -1475,37 +1475,18 @@
   </script>
   <script>
     (function(){
-      var activities = [
-        { name: "Faza", flag: "🇲🇾", action: "just enrolled in Turn Charts Into Cashflow", product: "Ultimate Class" },
-        { name: "Darvin", flag: "🇸🇬", action: "just deployed a custom AI trading system", product: "Turnkey" },
-        { name: "Jackson", flag: "🇲🇾", action: "started the automation program", product: "Framework Access" },
-        { name: "Azri", flag: "🇲🇾", action: "just got their system deployed live", product: "Turnkey" },
-        { name: "Murtazin", flag: "🇰🇿", action: "completed the course and building their system", product: "Ultimate Class" },
-        { name: "Rina", flag: "🇲🇾", action: "just upgraded to Turnkey deployment", product: "Turnkey" },
-        { name: "Hafiz", flag: "🇸🇬", action: "downloaded the Strategy Blueprint", product: "Free Resource" },
-        { name: "Aiman", flag: "🇲🇾", action: "just purchased Framework Access", product: "Self-Serve" },
-        { name: "Sarah", flag: "🇮🇩", action: "enrolled in the automation workshop", product: "Ultimate Class" },
-        { name: "Kenny", flag: "🇭🇰", action: "deployed their Gold scalping system", product: "Turnkey" },
-        { name: "Faqih", flag: "🇲🇾", action: "just signed up for the program", product: "Ultimate Class" },
-        { name: "Wei Ming", flag: "🇨🇳", action: "got their MT5 EA set up and running", product: "Turnkey" },
-      ];
-      var container = document.getElementById(\'social-proof\');
-      if (!container) return;
-      var current = 0;
-      function show(i) {
-        var item = activities[i % activities.length];
-        var times = ["just now","2 min ago","5 min ago","12 min ago","18 min ago","27 min ago","1 hour ago","3 hours ago"];
-        var t = times[Math.floor(Math.random() * times.length)];
-        container.innerHTML = "<div class=\'sp-card\'>" +
-          "<div class=\'sp-avatar\'>" + item.flag + "</div>" +
-          "<div class=\'sp-content\'>" +
-            "<div class=\'sp-name\'>" + item.flag + " " + item.name + "</div>" +
-            "<div class=\'sp-action\'>" + item.action + " <strong>" + item.product + "</strong></div>" +
-            "<div class=\'sp-time\'>" + t + "</div>" +
-          "</div></div>";
-        container.classList.add(\'visible\');
+      var N=["Ahmad","Sarah","Michael","Jessica","Daniel","Emily","David","Sofia","Alex","Nina","Ryan","Amanda","Kevin","Rachel","Brian","Vanessa","Jason","Hannah","Chris","Michelle","Patrick","Angela","Thomas","Natasha","Jonathan","Diana","Mark","Sandra","Steven","Lisa","Andrew","Karen","Adam","Tina","Edward","Pamela","Raymond","Vivian","Simon","Grace","Derek","Wendy","Vincent","Joyce","Norman","Elaine","Albert","Shirley","Henry","Catherine"];
+      var L=["Tan","Wong","Lim","Lee","Ng","Koh","Ong","Teo","Chan","Goh","Chua","Loh","Yap","Yeo","Liew","Chen","Wang","Li","Zhang","Liu","Yang","Huang","Zhou","Wu","Xu","Zhu","Lin","Hew","Chin","Low","Singh","Ho","Tai","Kwan","Phua","Saw","Pang","Foong","Ling","Kok"];
+      var F=["🇲🇾","🇸🇬","🇮🇩","🇭🇰","🇰🇷","🇹🇭","🇻🇳","🇵🇭","🇨🇳","🇯🇵","🇦🇺","🇬🇧"];
+      var A=["just enrolled in Turn Charts Into Cashflow","just deployed a custom AI trading system","started the automation program","just got their system deployed live","downloaded the Strategy Blueprint","just purchased Framework Access","upgraded to Turnkey deployment","signed up for the Ultimate Class","completed the automation workshop"];
+      var P=["Ultimate Class","Turnkey","Framework Access","Self-Serve","Free Resource"];
+      var c=document.getElementById("social-proof");if(!c)return;
+      function r(a){return a[Math.floor(Math.random()*a.length)];}
+      function s(){
+        c.innerHTML='<div class="sp-card"><div class="sp-avatar">'+r(F)+'</div><div class="sp-content"><div class="sp-name">'+r(F)+' '+r(N)+' '+r(L)+'</div><div class="sp-action">'+r(A)+' <strong>'+r(P)+'</strong></div><div class="sp-time">'+["just now","2 min ago","5 min ago","12 min ago","18 min ago","27 min ago","1 hour ago","3 hours ago"][Math.floor(Math.random()*8)]+'</div></div></div>';
+        c.classList.add("visible");
       }
-      setTimeout(function(){ show(0); setInterval(function(){ current++; show(current); }, 14000); }, 3000);
+      setTimeout(function(){s();setInterval(s,14000);},3000);
     })();
   </script>
 
