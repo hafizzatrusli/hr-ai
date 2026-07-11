@@ -692,30 +692,36 @@
     }
     .pay-address {
       display: none;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(13,148,136,0.1);
+      border: 1px solid var(--border);
+      padding: 0.5rem 0.7rem;
+      border-radius: 8px;
+      margin-top: 0.5rem;
+    }
+    .pay-address.show { display: flex; }
+    .pay-address .pay-addr-text {
+      flex: 1;
+      min-width: 0;
       font-family: 'JetBrains Mono', monospace;
       font-size: 0.55rem;
       color: var(--cyan-bright);
       word-break: break-all;
-      background: rgba(13,148,136,0.1);
-      border: 1px solid var(--border);
-      padding: 0.6rem 3.2rem 0.6rem 0.8rem;
-      border-radius: 8px;
-      margin-top: 0.5rem;
-      position: relative;
+      line-height: 1.4;
     }
-    .pay-address.show { display: block; }
     .pay-address .copy-btn {
-      position: absolute;
-      top: 0.4rem; right: 0.4rem;
+      flex-shrink: 0;
       background: var(--cyan-dim);
       border: 1px solid var(--border);
       border-radius: 4px;
       color: var(--cyan-bright);
       font-size: 0.6rem;
-      padding: 0.2rem 0.5rem;
+      padding: 0.25rem 0.6rem;
       cursor: pointer;
       transition: all 0.2s;
       font-family: 'Inter', sans-serif;
+      white-space: nowrap;
     }
     .pay-address .copy-btn:hover {
       background: var(--cyan);
@@ -1118,7 +1124,7 @@
             <div style="font-size:0.55rem; color:var(--text-dim); margin-bottom:0.6rem;">Network: Bitcoin</div>
             <button class="pay-btn" onclick="toggleAddress('btc-addr')">🔑 Show Address</button>
             <div id="btc-addr" class="pay-address">
-              bc1q5qt4qrf536q7zmrfxzcvaulpwlfa66hyuhqku9
+              <span class="pay-addr-text">bc1q5qt4qrf536q7zmrfxzcvaulpwlfa66hyuhqku9</span>
               <button class="copy-btn" onclick="copyAddress('btc-addr')">📋 Copy</button>
             </div>
           </div>
@@ -1128,7 +1134,7 @@
             <div style="font-size:0.55rem; color:var(--text-dim); margin-bottom:0.6rem;">Network: ERC20</div>
             <button class="pay-btn" onclick="toggleAddress('usdt-addr')">🔑 Show Address</button>
             <div id="usdt-addr" class="pay-address">
-              0xeaaa4efaaf0f9dde2c0928e1a1c2667d8af99b89
+              <span class="pay-addr-text">0xeaaa4efaaf0f9dde2c0928e1a1c2667d8af99b89</span>
               <button class="copy-btn" onclick="copyAddress('usdt-addr')">📋 Copy</button>
             </div>
           </div>
@@ -1138,7 +1144,7 @@
             <div style="font-size:0.55rem; color:var(--text-dim); margin-bottom:0.6rem;">Network: ERC20</div>
             <button class="pay-btn" onclick="toggleAddress('usdc-addr')">🔑 Show Address</button>
             <div id="usdc-addr" class="pay-address">
-              0x60657bad325874a58fb5dc7f38ca285dd676368b
+              <span class="pay-addr-text">0x60657bad325874a58fb5dc7f38ca285dd676368b</span>
               <button class="copy-btn" onclick="copyAddress('usdc-addr')">📋 Copy</button>
             </div>
           </div>
@@ -1320,7 +1326,7 @@
     }
     function copyAddress(id) {
       var el = document.getElementById(id);
-      var text = el.textContent.replace('📋 Copy', '').trim();
+      var text = el.querySelector('.pay-addr-text').textContent.trim();
       navigator.clipboard.writeText(text).then(function() {
         var btn = el.querySelector('.copy-btn');
         var orig = btn.textContent;
