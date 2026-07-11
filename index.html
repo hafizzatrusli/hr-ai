@@ -1488,7 +1488,7 @@
       c.innerHTML='<div class="sp-card"><div class="sp-avatar">'+FL[flg]+'</div><div class="sp-content"><div class="sp-name">'+FL[flg]+' '+r(N)+' '+r(L)+'</div><div class="sp-action">'+r(A)+'</div><div class="sp-time">'+r(TC)+'</div></div></div>';
       c.classList.add('visible');
     }
-    setTimeout(function(){s();setInterval(s,14000);},3000);
+    function next(){setTimeout(function(){s();next();},Math.floor(Math.random()*35000+25000));}setTimeout(function(){s();next();},5000);
   })();
 </script>
   
