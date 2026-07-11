@@ -3,9 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HR AI — Build Your AI Trader</title>
+  <title>HR AI — Build Your AI Trading System</title>
+  <meta name="description" content="Custom AI trading systems for MT5. Signal detection, risk management, and automated execution — deployed to your terminal in days. Built by a trader with 21+ years in global markets.">
+  <meta property="og:title" content="HR AI — Build Your AI Trading System">
+  <meta property="og:description" content="Custom AI trading systems for MT5. Signal detection, risk management, and automated execution. Built by a trader, for traders.">
+  <meta property="og:image" content="https://hafizzatrusli.github.io/hr-ai/hafizzat.jpg">
+  <meta property="og:url" content="https://hafizzatrusli.github.io/hr-ai/">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='28' font-size='28'>📈</text></svg>">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -1092,7 +1100,7 @@
 
     // ── Particles ──
     const particlesGeo = new THREE.BufferGeometry();
-    const count = 1800;
+    const count = 600;
     const positions = new Float32Array(count * 3);
     const velocities = [];
 
@@ -1110,7 +1118,7 @@
     particlesGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
 
     const particlesMat = new THREE.PointsMaterial({
-      size: 0.06,
+      size: 0.08,
       color: 0x0d9488,
       transparent: true,
       opacity: 0.6,
