@@ -1570,5 +1570,28 @@
     });
   })();
   </script>
+
+  <script>
+  // ── Live signal feed from MT5 ──
+  (function(){
+    fetch('https://raw.githubusercontent.com/hafizzatrusli/hr-ai/main/signals.json?' + Date.now())
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        var c = document.querySelector('.signal-scroll');
+        if (!c) return;
+        var h = '';
+        data.signals.forEach(function(s) {
+          var d = s.direction.toLowerCase() === 'buy' ? 'buy' : 'sell';
+          var p = s.profit >= 0 ? '+' : '';
+          h += '<div class="signal-item"><span class="sig-dir ' + d + '">' + s.direction + '</span>' +
+               '<span class="sig-pair">' + s.symbol + '</span>' +
+               '@' + s.entry + ' → ' + s.current +
+               ' <span class="sig-profit positive">' + p + s.profit + '</span></div>';
+        });
+        c.innerHTML = h + h;
+      })
+      .catch(function() { /* fallback to static */ });
+  })();
+  </script>
 </body>
 </html>
