@@ -1,0 +1,11 @@
+{
+  "updated": "2026-07-13T10:30:00",
+  "signals": [
+    {"direction": "BUY", "symbol": "GOLD", "entry": 4067.81, "current": 4071.41, "profit": 3.60, "status": "open"},
+    {"direction": "BUY", "symbol": "GOLD", "entry": 4195.37, "current": 4198.08, "profit": 2.71, "status": "closed"},
+    {"direction": "BUY", "symbol": "GOLD", "entry": 4199.85, "current": 4202.00, "profit": 2.15, "status": "closed"},
+    {"direction": "SELL", "symbol": "GOLD", "entry": 4134.21, "current": 4132.97, "profit": 1.24, "status": "closed"},
+    {"direction": "SELL", "symbol": "GOLD", "entry": 4127.23, "current": 4126.12, "profit": 1.11, "status": "closed"},
+    {"direction": "BUY", "symbol": "GOLD", "entry": 4073.17, "current": 4074.47, "profit": 1.30, "status": "closed"}
+  ]
+}
