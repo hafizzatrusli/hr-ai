@@ -1,12 +1,12 @@
 {
-  "updated": "2026-07-15T07:15:00Z",
+  "updated": "2026-07-15T09:03:56Z",
   "signals": [
     {
       "direction": "SELL",
       "symbol": "GOLD",
       "entry": 4030.80,
-      "current": 4030.39,
-      "profit": 0.41,
+      "current": 4033.55,
+      "profit": -2.75,
       "status": "open"
     },
     {
