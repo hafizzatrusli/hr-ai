@@ -336,36 +336,30 @@ Be as detailed as possible..." required></textarea>
         notes: document.getElementById('notes').value.trim()
       };
 
-      try {
-        const resp = await fetch('https://api.hafizzatrusli.com/onboard', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data)
-        });
-        if (resp.ok) {
-          document.getElementById('formScreen').classList.add('hide');
-          document.getElementById('successScreen').classList.add('show');
-          return;
-        }
-      } catch(e) {}
+      // Try HTTPS Cloudflare Tunnel first
+      const endpoints = [
+        'https://dem-anchor-classic-catalog.trycloudflare.com/api/onboard',
+        'http://43.156.228.6/api/onboard'
+      ];
 
-      // Fallback
-      try {
-        const resp2 = await fetch('https://formspree.io/f/xovenpqj', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-          body: JSON.stringify(data)
-        });
-        if (resp2.ok) {
-          document.getElementById('formScreen').classList.add('hide');
-          document.getElementById('successScreen').classList.add('show');
-          return;
-        }
-      } catch(e2) {}
+      for (const url of endpoints) {
+        try {
+          const resp = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+          });
+          if (resp.ok) {
+            document.getElementById('formScreen').classList.add('hide');
+            document.getElementById('successScreen').classList.add('show');
+            return;
+          }
+        } catch(e) {}
+      }
 
       btn.disabled = false;
       btn.innerHTML = '● Submit & Start Build';
-      alert('Could not submit. Please message Hafizzat directly on Telegram: @MsRinaC');
+      alert('Connection issue. Please message Hafizzat directly on Telegram: @MsRinaC');
     });
   </script>
 </body>
