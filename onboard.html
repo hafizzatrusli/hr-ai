@@ -350,8 +350,7 @@ Be as detailed as possible..." required></textarea>
             body: JSON.stringify(data)
           });
           if (resp.ok) {
-            document.getElementById('formScreen').classList.add('hide');
-            document.getElementById('successScreen').classList.add('show');
+            window.location.href = '/hr-ai/thankyou.html';
             return;
           }
         } catch(e) {}
