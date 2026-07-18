@@ -1,0 +1,1 @@
+I need to update the submit handler to redirect to thankyou.html instead of showing inline success
