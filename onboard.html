@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HR AI — Onboard Your System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --cyan: #0d9488;
+      --cyan-bright: #14d8c4;
+      --cyan-glow: rgba(13, 148, 136, 0.4);
+      --cyan-dim: rgba(13, 148, 136, 0.15);
+      --bg: #05080a;
+      --bg-card: rgba(13, 20, 25, 0.7);
+      --text: #e8f0f0;
+      --text-dim: #7a9296;
+      --border: rgba(13, 148, 136, 0.2);
+      --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(13, 148, 136, 0.015) 2px, rgba(13, 148, 136, 0.015) 4px);
+      pointer-events: none;
+      z-index: 1;
+    }
+    .content {
+      position: relative;
+      z-index: 2;
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--cyan); border-radius: 10px; }
+    .header { text-align: center; padding: 2rem 0 1rem; }
+    .logo { font-weight: 800; font-size: 1.1rem; color: var(--text); text-decoration: none; letter-spacing: 2px; text-transform: uppercase; }
+    .logo span { color: var(--cyan-bright); text-shadow: 0 0 20px var(--cyan-glow); }
+    .badge {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: var(--cyan-dim); border: 1px solid var(--border);
+      padding: 0.3rem 1rem; border-radius: 100px;
+      font-size: 0.6rem; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 2px; color: var(--cyan-bright); margin-bottom: 1.5rem;
+    }
+    .badge .dot { width: 5px; height: 5px; background: var(--cyan-bright); border-radius: 50%; animation: blink 1.5s infinite; }
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
+    h1 { font-size: 2.2rem; font-weight: 800; letter-spacing: -1px; margin-bottom: 0.5rem; }
+    h1 .gradient { background: linear-gradient(135deg, var(--cyan-bright), #5eead4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .sub { color: var(--text-dim); font-size: 0.9rem; line-height: 1.6; font-weight: 300; margin-bottom: 2rem; }
+    .step-indicator { display: flex; justify-content: center; gap: 0.5rem; margin-bottom: 2rem; }
+    .step-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); transition: all 0.3s; }
+    .step-dot.active { background: var(--cyan-bright); box-shadow: 0 0 10px var(--cyan-glow); width: 24px; border-radius: 4px; }
+    .step-dot.done { background: var(--cyan); }
+    .card { background: var(--bg-card); backdrop-filter: blur(20px); border: 1px solid var(--border); border-radius: 16px; padding: 2rem; margin-bottom: 1rem; }
+    .form-group { margin-bottom: 1.5rem; }
+    .form-group:last-child { margin-bottom: 0; }
+    label { display: block; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; color: var(--cyan); margin-bottom: 0.4rem; }
+    label .required { color: #ef4444; }
+    label .hint { font-weight: 400; text-transform: none; letter-spacing: 0; color: var(--text-dim); font-size: 0.7rem; }
+    input, textarea, select {
+      width: 100%; padding: 0.8rem 1rem;
+      background: rgba(5, 8, 10, 0.6); border: 1px solid var(--border); border-radius: 8px;
+      color: var(--text); font-family: 'Inter', sans-serif; font-size: 0.9rem;
+      transition: border-color 0.3s, box-shadow 0.3s; outline: none;
+    }
+    input:focus, textarea:focus, select:focus { border-color: var(--cyan); box-shadow: 0 0 20px var(--cyan-glow); }
+    input::placeholder, textarea::placeholder { color: var(--text-dim); opacity: 0.5; }
+    select { cursor: pointer; }
+    select option { background: #0a1518; color: var(--text); }
+    textarea { min-height: 100px; resize: vertical; }
+    .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    @media (max-width: 500px) { .input-row { grid-template-columns: 1fr; } }
+    .tag-group { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .tag-btn {
+      padding: 0.4rem 1rem; background: transparent; border: 1px solid var(--border);
+      border-radius: 100px; color: var(--text-dim); font-size: 0.8rem;
+      cursor: pointer; transition: all 0.2s; font-family: 'Inter', sans-serif;
+    }
+    .tag-btn:hover { border-color: var(--cyan); color: var(--cyan-bright); }
+    .tag-btn.selected { background: var(--cyan-dim); border-color: var(--cyan); color: var(--cyan-bright); box-shadow: 0 0 10px var(--cyan-glow); }
+    .btn-primary {
+      display: block; width: 100%; padding: 1.1rem;
+      background: linear-gradient(135deg, var(--cyan), #0f766e);
+      color: #fff; border: none; border-radius: 8px;
+      font-size: 0.9rem; font-weight: 700; cursor: pointer;
+      text-transform: uppercase; letter-spacing: 1.5px;
+      transition: transform 0.15s, box-shadow 0.3s; font-family: 'Inter', sans-serif;
+      position: relative; overflow: hidden;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 40px var(--cyan-glow); }
+    .btn-primary:active { transform: scale(0.97); }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .success-screen { display: none; text-align: center; padding: 3rem 1rem; }
+    .success-screen.show { display: block; }
+    .form-screen.hide { display: none; }
+    .success-icon { width: 64px; height: 64px; margin: 0 auto 1rem; border: 2px solid var(--cyan); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; box-shadow: 0 0 30px var(--cyan-glow); }
+    .success-screen h2 { font-size: 1.5rem; margin-bottom: 0.5rem; }
+    .success-screen p { color: var(--text-dim); font-size: 0.85rem; line-height: 1.6; margin-bottom: 2rem; }
+    .whatsapp-btn { display: inline-block; padding: 0.9rem 2rem; background: #25d366; color: #fff; border: none; border-radius: 8px; font-size: 0.85rem; font-weight: 700; cursor: pointer; text-decoration: none; text-transform: uppercase; letter-spacing: 1px; transition: transform 0.15s; font-family: 'Inter', sans-serif; }
+    .whatsapp-btn:hover { transform: translateY(-2px); box-shadow: 0 0 30px rgba(37,211,102,0.3); }
+    .spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.6s linear infinite; vertical-align: middle; margin-right: 0.5rem; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; } }
+    .footer-text { text-align: center; color: var(--text-dim); font-size: 0.65rem; padding: 2rem 0; opacity: 0.5; }
+  </style>
+</head>
+<body>
+  <div class="content">
+    <div class="header">
+      <div class="logo">HR <span>AI</span></div>
+      <div style="margin-top:1.5rem;">
+        <div class="badge"><span class="dot"></span> SYSTEM ONBOARDING</div>
+        <h1>Configure Your <span class="gradient">AI Trading System</span></h1>
+        <p class="sub">Tell us about your strategy and we'll build your custom system. Estimated build time: <strong>5–7 days</strong>.</p>
+      </div>
+      <div class="step-indicator">
+        <div class="step-dot active"></div>
+        <div class="step-dot"></div>
+        <div class="step-dot"></div>
+      </div>
+    </div>
+
+    <div class="form-screen" id="formScreen">
+      <div class="card">
+        <form id="onboardForm" novalidate>
+          <div id="step1">
+            <div class="form-group">
+              <label>Your Name <span class="required">*</span></label>
+              <input type="text" id="name" placeholder="e.g. Ahmad Bin Abdullah" required>
+            </div>
+            <div class="form-group">
+              <label>Telegram / WhatsApp <span class="required">*</span></label>
+              <input type="text" id="contact" placeholder="@yourTelegram or +60123456789" required>
+            </div>
+            <div class="form-group">
+              <label>Email <span class="hint">(optional)</span></label>
+              <input type="email" id="email" placeholder="you@email.com">
+            </div>
+            <div class="form-group">
+              <label>Plan <span class="required">*</span></label>
+              <select id="plan" required>
+                <option value="">Select your plan...</option>
+                <option value="standard">Standard — $499/mo</option>
+                <option value="early-access">Early Access — $20,000 ownership</option>
+              </select>
+            </div>
+            <button type="button" class="btn-primary" onclick="nextStep(1)">Continue →</button>
+          </div>
+          <div id="step2" style="display:none;">
+            <div class="form-group">
+              <label>Pairs You Trade <span class="required">*</span></label>
+              <div class="tag-group" id="pairs">
+                <button type="button" class="tag-btn" data-value="EURUSD">EUR/USD</button>
+                <button type="button" class="tag-btn" data-value="GBPUSD">GBP/USD</button>
+                <button type="button" class="tag-btn" data-value="GOLD">GOLD (XAU/USD)</button>
+                <button type="button" class="tag-btn" data-value="EURJPY">EUR/JPY</button>
+                <button type="button" class="tag-btn" data-value="GBPJPY">GBP/JPY</button>
+                <button type="button" class="tag-btn" data-value="GBPAUD">GBP/AUD</button>
+                <button type="button" class="tag-btn" data-value="USDJPY">USD/JPY</button>
+                <button type="button" class="tag-btn" data-value="BTCUSD">BTC/USD</button>
+                <button type="button" class="tag-btn" data-value="ETHUSD">ETH/USD</button>
+                <button type="button" class="tag-btn" data-value="other">Other</button>
+              </div>
+              <input type="text" id="pairs_other" placeholder="Other pairs..." style="display:none;margin-top:0.5rem;">
+            </div>
+            <div class="input-row">
+              <div class="form-group">
+                <label>Preferred Timeframes <span class="required">*</span></label>
+                <div class="tag-group" id="timeframes">
+                  <button type="button" class="tag-btn" data-value="M1">M1</button>
+                  <button type="button" class="tag-btn" data-value="M5">M5</button>
+                  <button type="button" class="tag-btn" data-value="M15">M15</button>
+                  <button type="button" class="tag-btn" data-value="M30">M30</button>
+                  <button type="button" class="tag-btn" data-value="H1">H1</button>
+                  <button type="button" class="tag-btn" data-value="H4">H4</button>
+                  <button type="button" class="tag-btn" data-value="D1">D1</button>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Risk Per Trade <span class="required">*</span></label>
+                <select id="risk" required>
+                  <option value="">Select...</option>
+                  <option value="0.5">0.5%</option>
+                  <option value="1" selected>1% (Recommended)</option>
+                  <option value="1.5">1.5%</option>
+                  <option value="2">2%</option>
+                  <option value="custom">Custom</option>
+                </select>
+                <input type="text" id="risk_custom" placeholder="Your risk %" style="display:none;margin-top:0.5rem;">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Your Entry Rules <span class="required">*</span></label>
+              <textarea id="entry_rules" placeholder="Describe your entry criteria. What confirms a trade? Examples:
+- EMA crossover on H1
+- Order block + FVG confirmation
+- MACD divergence on M15
+Be as detailed as possible..." required></textarea>
+            </div>
+            <div class="form-group">
+              <label>Your Exit Rules <span class="hint">(how you take profit / cut loss)</span></label>
+              <textarea id="exit_rules" placeholder="Describe your exit strategy. SL/TP placement, trailing stops, etc."></textarea>
+            </div>
+            <div style="display:flex;gap:0.5rem;">
+              <button type="button" class="btn-primary" style="background:transparent;border:1px solid var(--border);color:var(--text-dim);flex:0 0 auto;padding:1.1rem 1.5rem;" onclick="prevStep(2)">← Back</button>
+              <button type="button" class="btn-primary" onclick="nextStep(2)" style="flex:1;">Continue →</button>
+            </div>
+          </div>
+          <div id="step3" style="display:none;">
+            <div class="form-group">
+              <label>Account Size <span class="hint">(for position sizing)</span></label>
+              <input type="text" id="account_size" placeholder="e.g. $10,000">
+            </div>
+            <div class="form-group">
+              <label>Broker</label>
+              <input type="text" id="broker" placeholder="e.g. FxPro, IC Markets, etc.">
+            </div>
+            <div class="form-group">
+              <label>Anything else? <span class="hint">(extra notes, specific indicators, special requests)</span></label>
+              <textarea id="notes" placeholder="Any additional notes about your strategy, specific indicators you use, or questions..."></textarea>
+            </div>
+            <div class="form-group">
+              <button type="submit" class="btn-primary" id="submitBtn">● Submit &amp; Start Build</button>
+            </div>
+            <div style="display:flex;gap:0.5rem;">
+              <button type="button" class="btn-primary" style="background:transparent;border:1px solid var(--border);color:var(--text-dim);flex:0 0 auto;padding:1.1rem 1.5rem;" onclick="prevStep(3)">← Back</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="success-screen" id="successScreen">
+      <div class="success-icon">✓</div>
+      <h2>Strategy Received! 🎯</h2>
+      <p>Your system build is now in queue. Hafizzat will review your strategy and contact you on Telegram within 24 hours to start the assembly process.</p>
+      <a href="https://t.me/MsRinaC" class="whatsapp-btn" target="_blank">💬 Message Hafizzat</a>
+    </div>
+
+    <div class="footer-text">HR AI — Built by a trader, for traders.</div>
+  </div>
+
+  <script>
+    let currentStep = 1;
+    let selectedPairs = [];
+    let selectedTimeframes = [];
+
+    document.querySelectorAll('.tag-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const group = this.closest('.tag-group');
+        if (group.id === 'pairs' || group.id === 'timeframes') {
+          this.classList.toggle('selected');
+          updateSelections();
+        }
+      });
+    });
+
+    function updateSelections() {
+      selectedPairs = [...document.querySelectorAll('#pairs .tag-btn.selected')].map(b => b.dataset.value);
+      selectedTimeframes = [...document.querySelectorAll('#timeframes .tag-btn.selected')].map(b => b.dataset.value);
+      document.getElementById('pairs_other').style.display = selectedPairs.includes('other') ? 'block' : 'none';
+      document.getElementById('risk_custom').style.display = document.getElementById('risk').value === 'custom' ? 'block' : 'none';
+    }
+
+    document.getElementById('risk').addEventListener('change', updateSelections);
+
+    function showStep(step) {
+      document.getElementById('step1').style.display = step === 1 ? 'block' : 'none';
+      document.getElementById('step2').style.display = step === 2 ? 'block' : 'none';
+      document.getElementById('step3').style.display = step === 3 ? 'block' : 'none';
+      document.querySelectorAll('.step-dot').forEach((d, i) => {
+        d.classList.toggle('active', i + 1 === step);
+        d.classList.toggle('done', i + 1 < step);
+      });
+      currentStep = step;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function nextStep(from) {
+      if (from === 1) {
+        const name = document.getElementById('name').value.trim();
+        const contact = document.getElementById('contact').value.trim();
+        const plan = document.getElementById('plan').value;
+        if (!name || !contact || !plan) { alert('Please fill in all required fields.'); return; }
+        showStep(2);
+      } else if (from === 2) {
+        if (selectedPairs.length === 0 || selectedTimeframes.length === 0) { alert('Please select at least one pair and one timeframe.'); return; }
+        if (!document.getElementById('entry_rules').value.trim()) { alert('Please describe your entry rules.'); return; }
+        showStep(3);
+      }
+    }
+
+    function prevStep(from) { showStep(from - 1); }
+
+    document.getElementById('onboardForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const btn = document.getElementById('submitBtn');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span> Submitting...';
+
+      const pairsOther = document.getElementById('pairs_other').value.trim();
+      let allPairs = [...selectedPairs];
+      if (selectedPairs.includes('other') && pairsOther) {
+        allPairs = allPairs.filter(p => p !== 'other').concat(pairsOther.split(',').map(s => s.trim()));
+      }
+
+      const risk = document.getElementById('risk').value;
+      const riskVal = risk === 'custom' ? document.getElementById('risk_custom').value.trim() : risk + '%';
+
+      const data = {
+        name: document.getElementById('name').value.trim(),
+        contact: document.getElementById('contact').value.trim(),
+        email: document.getElementById('email').value.trim(),
+        plan: document.getElementById('plan').value,
+        pairs: allPairs.join(', '),
+        timeframes: selectedTimeframes.join(', '),
+        risk: riskVal,
+        entry_rules: document.getElementById('entry_rules').value.trim(),
+        exit_rules: document.getElementById('exit_rules').value.trim(),
+        account_size: document.getElementById('account_size').value.trim(),
+        broker: document.getElementById('broker').value.trim(),
+        notes: document.getElementById('notes').value.trim()
+      };
+
+      try {
+        const resp = await fetch('https://api.hafizzatrusli.com/onboard', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        if (resp.ok) {
+          document.getElementById('formScreen').classList.add('hide');
+          document.getElementById('successScreen').classList.add('show');
+          return;
+        }
+      } catch(e) {}
+
+      // Fallback
+      try {
+        const resp2 = await fetch('https://formspree.io/f/xovenpqj', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        if (resp2.ok) {
+          document.getElementById('formScreen').classList.add('hide');
+          document.getElementById('successScreen').classList.add('show');
+          return;
+        }
+      } catch(e2) {}
+
+      btn.disabled = false;
+      btn.innerHTML = '● Submit & Start Build';
+      alert('Could not submit. Please message Hafizzat directly on Telegram: @MsRinaC');
+    });
+  </script>
+</body>
+</html>
